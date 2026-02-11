@@ -1,0 +1,364 @@
+// --- Inventory Management Implementation ---
+// Inventory Setup Handlers
+case "list_product_categories": {
+    const parsed = z.object({ branch_id: z.number().optional() }).parse(args);
+    let query = "SELECT * FROM product_category WHERE 1=1";
+    const params: any[] = [];
+    if (parsed.branch_id) {
+        query += " AND branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+    query += " ORDER BY name";
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}
+
+case "create_product_category": {
+    const parsed = z.object({ name: z.string(), branch_id: z.number() }).parse(args);
+    const [result] = await pool.execute(
+        "INSERT INTO product_category (name, branch_id) VALUES (?, ?)",
+        [parsed.name, parsed.branch_id]
+    );
+    return { content: [{ type: "text", text: `Product category created. ID: ${(result as any).insertId}` }] };
+}
+
+case "list_product_units": {
+    const parsed = z.object({ branch_id: z.number().optional() }).parse(args);
+    let query = "SELECT * FROM product_unit WHERE 1=1";
+    const params: any[] = [];
+    if (parsed.branch_id) {
+        query += " AND branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+    query += " ORDER BY name";
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}
+
+case "create_product_unit": {
+    const parsed = z.object({ name: z.string(), branch_id: z.number() }).parse(args);
+    const [result] = await pool.execute(
+        "INSERT INTO product_unit (name, branch_id) VALUES (?, ?)",
+        [parsed.name, parsed.branch_id]
+    );
+    return { content: [{ type: "text", text: `Product unit created. ID: ${(result as any).insertId}` }] };
+}
+
+case "list_product_stores": {
+    const parsed = z.object({ branch_id: z.number().optional() }).parse(args);
+    let query = "SELECT * FROM product_store WHERE 1=1";
+    const params: any[] = [];
+    if (parsed.branch_id) {
+        query += " AND branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+    query += " ORDER BY name";
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}
+
+case "create_product_store": {
+    const parsed = z.object({
+        name: z.string(),
+        code: z.string(),
+        mobileno: z.string().optional(),
+        address: z.string().optional(),
+        description: z.string().optional(),
+        branch_id: z.number()
+    }).parse(args);
+    const [result] = await pool.execute(
+        "INSERT INTO product_store (name, code, mobileno, address, description, branch_id) VALUES (?, ?, ?, ?, ?, ?)",
+        [parsed.name, parsed.code, parsed.mobileno || '', parsed.address || '', parsed.description || '', parsed.branch_id]
+    );
+    return { content: [{ type: "text", text: `Product store created. ID: ${(result as any).insertId}` }] };
+}
+
+case "list_product_suppliers": {
+    const parsed = z.object({ branch_id: z.number().optional() }).parse(args);
+    let query = "SELECT * FROM product_supplier WHERE 1=1";
+    const params: any[] = [];
+    if (parsed.branch_id) {
+        query += " AND branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+    query += " ORDER BY name";
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}
+
+case "create_product_supplier": {
+    const parsed = z.object({
+        name: z.string(),
+        company_name: z.string().optional(),
+        mobileno: z.string(),
+        email: z.string().optional(),
+        address: z.string().optional(),
+        product_list: z.string().optional(),
+        branch_id: z.number()
+    }).parse(args);
+    const [result] = await pool.execute(
+        "INSERT INTO product_supplier (name, company_name, mobileno, email, address, product_list, branch_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [parsed.name, parsed.company_name || '', parsed.mobileno, parsed.email || '', parsed.address || '', parsed.product_list || '', parsed.branch_id]
+    );
+    return { content: [{ type: "text", text: `Product supplier created. ID: ${(result as any).insertId}` }] };
+}
+
+// Product Management Handlers
+case "list_products": {
+    const parsed = z.object({
+        category_id: z.number().optional(),
+        branch_id: z.number().optional()
+    }).parse(args);
+    let query = `SELECT p.*, c.name as category_name, 
+                 pu.name as purchase_unit_name, su.name as sales_unit_name
+                 FROM product p
+                 LEFT JOIN product_category c ON p.category_id = c.id
+                 LEFT JOIN product_unit pu ON p.purchase_unit_id = pu.id
+                 LEFT JOIN product_unit su ON p.sales_unit_id = su.id
+                 WHERE 1=1`;
+    const params: any[] = [];
+    if (parsed.category_id) {
+        query += " AND p.category_id = ?";
+        params.push(parsed.category_id);
+    }
+    if (parsed.branch_id) {
+        query += " AND p.branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+    query += " ORDER BY p.name";
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}
+
+case "create_product": {
+    const parsed = z.object({
+        name: z.string(),
+        code: z.string(),
+        category_id: z.number(),
+        purchase_unit_id: z.number(),
+        sales_unit_id: z.number(),
+        unit_ratio: z.string().optional(),
+        purchase_price: z.number().optional(),
+        sales_price: z.number().optional(),
+        available_stock: z.string().optional(),
+        remarks: z.string().optional(),
+        branch_id: z.number()
+    }).parse(args);
+    const [result] = await pool.execute(
+        `INSERT INTO product (name, code, category_id, purchase_unit_id, sales_unit_id, unit_ratio, purchase_price, sales_price, available_stock, remarks, branch_id) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [parsed.name, parsed.code, parsed.category_id, parsed.purchase_unit_id, parsed.sales_unit_id, 
+         parsed.unit_ratio || '1', parsed.purchase_price || 0, parsed.sales_price || 0, 
+         parsed.available_stock || '0', parsed.remarks || '', parsed.branch_id]
+    );
+    return { content: [{ type: "text", text: `Product created. ID: ${(result as any).insertId}` }] };
+}
+
+case "update_product_stock": {
+    const parsed = z.object({
+        product_id: z.number(),
+        available_stock: z.string()
+    }).parse(args);
+    await pool.execute(
+        "UPDATE product SET available_stock = ? WHERE id = ?",
+        [parsed.available_stock, parsed.product_id]
+    );
+    return { content: [{ type: "text", text: `Product stock updated successfully.` }] };
+}
+
+// Purchase Management Handlers
+case "create_purchase": {
+    const parsed = z.object({
+        bill_no: z.string(),
+        supplier_id: z.number(),
+        store_id: z.number(),
+        date: z.string(),
+        remarks: z.string().optional(),
+        items: z.array(z.any()),
+        prepared_by: z.number().optional(),
+        branch_id: z.number()
+    }).parse(args);
+
+    // Calculate totals
+    let total = 0;
+    for (const item of parsed.items) {
+        const subtotal = (item.quantity * item.unit_price) - (item.discount || 0);
+        total += subtotal;
+    }
+
+    // Insert purchase bill
+    const [billResult] = await pool.execute(
+        `INSERT INTO purchase_bill (bill_no, supplier_id, store_id, date, remarks, total, discount, paid, due, payment_status, purchase_status, prepared_by, branch_id) 
+         VALUES (?, ?, ?, ?, ?, ?, 0, 0, ?, 1, 1, ?, ?)`,
+        [parsed.bill_no, parsed.supplier_id, parsed.store_id, parsed.date, parsed.remarks || '', total, total, parsed.prepared_by || 1, parsed.branch_id]
+    );
+
+    const billId = (billResult as any).insertId;
+
+    // Insert purchase details
+    for (const item of parsed.items) {
+        const subtotal = (item.quantity * item.unit_price) - (item.discount || 0);
+        await pool.execute(
+            "INSERT INTO purchase_bill_details (purchase_bill_id, product_id, unit_price, quantity, discount, sub_total) VALUES (?, ?, ?, ?, ?, ?)",
+            [billId, item.product_id, item.unit_price, item.quantity, item.discount || 0, subtotal]
+        );
+
+        // Update product stock
+        await pool.execute(
+            "UPDATE product SET available_stock = available_stock + ? WHERE id = ?",
+            [item.quantity, item.product_id]
+        );
+    }
+
+    return { content: [{ type: "text", text: `Purchase order created. Bill ID: ${billId}` }] };
+}
+
+case "list_purchases": {
+    const parsed = z.object({
+        supplier_id: z.number().optional(),
+        start_date: z.string().optional(),
+        end_date: z.string().optional(),
+        branch_id: z.number().optional(),
+        limit: z.number().optional()
+    }).parse(args);
+
+    let query = `SELECT pb.*, ps.name as supplier_name, pst.name as store_name
+                 FROM purchase_bill pb
+                 LEFT JOIN product_supplier ps ON pb.supplier_id = ps.id
+                 LEFT JOIN product_store pst ON pb.store_id = pst.id
+                 WHERE 1=1`;
+    const params: any[] = [];
+
+    if (parsed.supplier_id) {
+        query += " AND pb.supplier_id = ?";
+        params.push(parsed.supplier_id);
+    }
+    if (parsed.start_date) {
+        query += " AND pb.date >= ?";
+        params.push(parsed.start_date);
+    }
+    if (parsed.end_date) {
+        query += " AND pb.date <= ?";
+        params.push(parsed.end_date);
+    }
+    if (parsed.branch_id) {
+        query += " AND pb.branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+
+    query += " ORDER BY pb.date DESC, pb.id DESC";
+
+    if (parsed.limit) {
+        query += " LIMIT ?";
+        params.push(parsed.limit);
+    } else {
+        query += " LIMIT 50";
+    }
+
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}
+
+case "get_purchase_details": {
+    const parsed = z.object({ purchase_id: z.number() }).parse(args);
+    
+    const [bill] = await pool.execute(
+        `SELECT pb.*, ps.name as supplier_name, pst.name as store_name
+         FROM purchase_bill pb
+         LEFT JOIN product_supplier ps ON pb.supplier_id = ps.id
+         LEFT JOIN product_store pst ON pb.store_id = pst.id
+         WHERE pb.id = ?`,
+        [parsed.purchase_id]
+    );
+
+    const [details] = await pool.execute(
+        `SELECT pbd.*, p.name as product_name
+         FROM purchase_bill_details pbd
+         LEFT JOIN product p ON pbd.product_id = p.id
+         WHERE pbd.purchase_bill_id = ?`,
+        [parsed.purchase_id]
+    );
+
+    return { content: [{ type: "text", text: JSON.stringify({ bill: bill[0], items: details }, null, 2) }] };
+}
+
+// Issue Management Handlers
+case "create_product_issue": {
+    const parsed = z.object({
+        role_id: z.number(),
+        user_id: z.number(),
+        date_of_issue: z.string(),
+        due_date: z.string().optional(),
+        remarks: z.string().optional(),
+        items: z.array(z.any()),
+        prepared_by: z.number().optional(),
+        branch_id: z.number()
+    }).parse(args);
+
+    // Insert issue header
+    const [issueResult] = await pool.execute(
+        `INSERT INTO product_issues (role_id, user_id, date_of_issue, due_date, remarks, prepared_by, status, branch_id) 
+         VALUES (?, ?, ?, ?, ?, ?, 0, ?)`,
+        [parsed.role_id, parsed.user_id, parsed.date_of_issue, parsed.due_date || null, parsed.remarks || '', parsed.prepared_by || 1, parsed.branch_id]
+    );
+
+    const issueId = (issueResult as any).insertId;
+
+    // Insert issue details and update stock
+    for (const item of parsed.items) {
+        await pool.execute(
+            "INSERT INTO product_issues_details (issues_id, product_id, quantity) VALUES (?, ?, ?)",
+            [issueId, item.product_id, item.quantity]
+        );
+
+        // Decrease product stock
+        await pool.execute(
+            "UPDATE product SET available_stock = available_stock - ? WHERE id = ?",
+            [item.quantity, item.product_id]
+        );
+    }
+
+    return { content: [{ type: "text", text: `Product issue created. Issue ID: ${issueId}` }] };
+}
+
+case "list_product_issues": {
+    const parsed = z.object({
+        user_id: z.number().optional(),
+        start_date: z.string().optional(),
+        end_date: z.string().optional(),
+        branch_id: z.number().optional(),
+        limit: z.number().optional()
+    }).parse(args);
+
+    let query = `SELECT pi.* FROM product_issues pi WHERE 1=1`;
+    const params: any[] = [];
+
+    if (parsed.user_id) {
+        query += " AND pi.user_id = ?";
+        params.push(parsed.user_id);
+    }
+    if (parsed.start_date) {
+        query += " AND pi.date_of_issue >= ?";
+        params.push(parsed.start_date);
+    }
+    if (parsed.end_date) {
+        query += " AND pi.date_of_issue <= ?";
+        params.push(parsed.end_date);
+    }
+    if (parsed.branch_id) {
+        query += " AND pi.branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+
+    query += " ORDER BY pi.date_of_issue DESC, pi.id DESC";
+
+    if (parsed.limit) {
+        query += " LIMIT ?";
+        params.push(parsed.limit);
+    } else {
+        query += " LIMIT 50";
+    }
+
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}

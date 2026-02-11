@@ -1,0 +1,183 @@
+Inventory-related tables:
+book_category, book_issues, bulk_msg_category, front_cms_gallery_category, hostel_category, leave_category, product, product_category, product_issues, product_issues_details, product_store, product_supplier, product_unit, purchase_bill, purchase_bill_details, purchase_payment_history, student_category
+
+
+book_category columns:
+  id: int(11) (Null: NO, Default: null)
+  name: longtext (Null: NO, Default: null)
+  branch_id: int(11) (Null: YES, Default: null)
+  Sample data: {"id":1,"name":"horror","branch_id":1}
+
+book_issues columns:
+  id: int(11) (Null: NO, Default: null)
+  book_id: int(11) (Null: NO, Default: null)
+  user_id: int(11) (Null: NO, Default: null)
+  role_id: int(11) (Null: NO, Default: null)
+  date_of_issue: date (Null: YES, Default: null)
+  date_of_expiry: date (Null: YES, Default: null)
+  return_date: date (Null: YES, Default: null)
+  fine_amount: decimal(18,2) (Null: NO, Default: null)
+  status: tinyint(1) (Null: NO, Default: 0)
+  issued_by: varchar(255) (Null: YES, Default: null)
+  return_by: int(11) (Null: YES, Default: null)
+  session_id: int(11) (Null: NO, Default: null)
+  branch_id: int(11) (Null: YES, Default: null)
+  created_at: timestamp (Null: NO, Default: current_timestamp())
+  Sample data: {"id":1,"book_id":1,"user_id":1,"role_id":7,"date_of_issue":"2025-12-16T18:30:00.000Z","date_of_expiry":"2025-12-26T18:30:00.000Z","return_date":"2026-01-06T18:30:00.000Z","fine_amount":"0.00","status":3,"issued_by":"2","return_by":2,"session_id":4,"branch_id":1,"created_at":"2025-12-18T06:20:11.000Z"}
+
+bulk_msg_category columns:
+  id: int(11) (Null: NO, Default: null)
+  name: varchar(255) (Null: NO, Default: null)
+  body: longtext (Null: NO, Default: null)
+  type: tinyint(4) (Null: NO, Default: null)
+  branch_id: int(11) (Null: YES, Default: null)
+
+front_cms_gallery_category columns:
+  id: int(11) (Null: NO, Default: null)
+  name: varchar(255) (Null: NO, Default: null)
+  branch_id: int(11) (Null: NO, Default: null)
+
+hostel_category columns:
+  id: int(11) (Null: NO, Default: null)
+  name: longtext (Null: NO, Default: null)
+  description: longtext (Null: YES, Default: null)
+  branch_id: int(11) (Null: YES, Default: null)
+  type: text (Null: YES, Default: null)
+  created_at: timestamp (Null: NO, Default: current_timestamp())
+  updated_at: datetime (Null: YES, Default: null)
+
+leave_category columns:
+  id: int(2) (Null: NO, Default: null)
+  name: longtext (Null: NO, Default: null)
+  role_id: tinyint(1) (Null: NO, Default: null)
+  days: int(11) (Null: NO, Default: null)
+  branch_id: int(11) (Null: YES, Default: null)
+  Sample data: {"id":1,"name":"fever","role_id":3,"days":5,"branch_id":1}
+
+product columns:
+  id: int(11) (Null: NO, Default: null)
+  name: varchar(100) (Null: NO, Default: null)
+  code: varchar(50) (Null: NO, Default: null)
+  category_id: int(11) (Null: NO, Default: null)
+  purchase_unit_id: int(11) (Null: NO, Default: null)
+  sales_unit_id: int(11) (Null: NO, Default: null)
+  unit_ratio: varchar(20) (Null: YES, Default: 1)
+  purchase_price: decimal(18,2) (Null: NO, Default: 0.00)
+  sales_price: decimal(18,2) (Null: NO, Default: 0.00)
+  available_stock: varchar(11) (Null: NO, Default: 0)
+  photo: varchar(100) (Null: YES, Default: null)
+  remarks: text (Null: NO, Default: null)
+  branch_id: int(11) (Null: NO, Default: null)
+  created_at: datetime (Null: NO, Default: current_timestamp())
+  updated_at: datetime (Null: YES, Default: null)
+  Sample data: {"id":1,"name":"Notebooks, registers","code":"001","category_id":1,"purchase_unit_id":1,"sales_unit_id":1,"unit_ratio":"100","purchase_price":"50.00","sales_price":"70.00","available_stock":"-1","photo":null,"remarks":"","branch_id":1,"created_at":"2025-12-21T04:03:55.000Z","updated_at":null}
+
+product_category columns:
+  id: int(11) (Null: NO, Default: null)
+  name: varchar(100) (Null: NO, Default: null)
+  branch_id: int(11) (Null: NO, Default: null)
+  created_at: datetime (Null: NO, Default: current_timestamp())
+  updated_at: datetime (Null: YES, Default: null)
+  Sample data: {"id":1,"name":"Stationery & Writing Supplies","branch_id":1,"created_at":"2025-12-21T03:55:37.000Z","updated_at":null}
+
+product_issues columns:
+  id: int(11) (Null: NO, Default: null)
+  role_id: int(11) (Null: NO, Default: null)
+  user_id: int(11) (Null: NO, Default: null)
+  date_of_issue: date (Null: NO, Default: null)
+  due_date: date (Null: NO, Default: null)
+  return_date: date (Null: YES, Default: null)
+  remarks: text (Null: NO, Default: null)
+  prepared_by: int(11) (Null: YES, Default: null)
+  status: tinyint(1) (Null: NO, Default: 0)
+  branch_id: int(11) (Null: NO, Default: null)
+  created_at: datetime (Null: NO, Default: current_timestamp())
+  updated_at: datetime (Null: YES, Default: current_timestamp())
+  Sample data: {"id":1,"role_id":2,"user_id":2,"date_of_issue":"2025-12-19T18:30:00.000Z","due_date":"2025-12-20T18:30:00.000Z","return_date":null,"remarks":"","prepared_by":1,"status":0,"branch_id":1,"created_at":"2025-12-21T04:21:21.000Z","updated_at":"2025-12-21T04:21:21.000Z"}
+
+product_issues_details columns:
+  id: int(11) (Null: NO, Default: null)
+  issues_id: int(11) (Null: NO, Default: null)
+  product_id: varchar(20) (Null: NO, Default: null)
+  quantity: varchar(20) (Null: NO, Default: null)
+  Sample data: {"id":1,"issues_id":1,"product_id":"3","quantity":"1"}
+
+product_store columns:
+  id: int(11) (Null: NO, Default: null)
+  name: varchar(255) (Null: NO, Default: null)
+  code: varchar(255) (Null: NO, Default: null)
+  mobileno: varchar(255) (Null: YES, Default: null)
+  address: varchar(300) (Null: YES, Default: null)
+  description: varchar(255) (Null: YES, Default: null)
+  branch_id: int(11) (Null: NO, Default: null)
+  created_at: datetime (Null: NO, Default: current_timestamp())
+  Sample data: {"id":1,"name":"Ram babu store","code":"1212","mobileno":"67576576576","address":"","description":"","branch_id":1,"created_at":"2025-12-21T04:16:14.000Z"}
+
+product_supplier columns:
+  id: int(11) (Null: NO, Default: null)
+  name: varchar(200) (Null: NO, Default: null)
+  address: text (Null: NO, Default: null)
+  mobileno: varchar(30) (Null: NO, Default: null)
+  email: varchar(100) (Null: NO, Default: null)
+  company_name: varchar(200) (Null: NO, Default: null)
+  product_list: mediumtext (Null: NO, Default: null)
+  branch_id: int(11) (Null: NO, Default: null)
+  created_at: datetime (Null: NO, Default: current_timestamp())
+  updated_at: datetime (Null: YES, Default: null)
+  Sample data: {"id":1,"name":"babu supplier","address":"","mobileno":"452425443232","email":"patanahi@gmail.com","company_name":"","product_list":"","branch_id":1,"created_at":"2025-12-21T04:16:49.000Z","updated_at":null}
+
+product_unit columns:
+  id: int(11) (Null: NO, Default: null)
+  name: varchar(50) (Null: NO, Default: null)
+  branch_id: int(11) (Null: NO, Default: null)
+  created_at: datetime (Null: NO, Default: current_timestamp())
+  updated_at: datetime (Null: YES, Default: null)
+  Sample data: {"id":1,"name":"Piece (Nos)","branch_id":1,"created_at":"2025-12-21T03:58:48.000Z","updated_at":null}
+
+purchase_bill columns:
+  id: int(11) (Null: NO, Default: null)
+  bill_no: varchar(200) (Null: NO, Default: null)
+  supplier_id: int(11) (Null: NO, Default: null)
+  store_id: int(11) (Null: NO, Default: null)
+  remarks: text (Null: NO, Default: null)
+  total: decimal(18,2) (Null: NO, Default: 0.00)
+  discount: decimal(18,2) (Null: NO, Default: 0.00)
+  paid: decimal(18,2) (Null: NO, Default: 0.00)
+  due: decimal(18,2) (Null: NO, Default: 0.00)
+  payment_status: int(11) (Null: NO, Default: null)
+  purchase_status: int(11) (Null: NO, Default: null)
+  date: date (Null: YES, Default: null)
+  prepared_by: int(11) (Null: YES, Default: null)
+  modifier_id: int(11) (Null: YES, Default: null)
+  branch_id: int(11) (Null: NO, Default: null)
+  created_at: datetime (Null: NO, Default: current_timestamp())
+  updated_at: datetime (Null: YES, Default: null)
+  Sample data: {"id":1,"bill_no":"0001","supplier_id":1,"store_id":1,"remarks":"","total":"9950.00","discount":"0.00","paid":"0.00","due":"9950.00","payment_status":1,"purchase_status":1,"date":"2025-12-19T18:30:00.000Z","prepared_by":1,"modifier_id":1,"branch_id":1,"created_at":"2025-12-21T04:20:50.000Z","updated_at":null}
+
+purchase_bill_details columns:
+  id: int(11) (Null: NO, Default: null)
+  purchase_bill_id: int(11) (Null: NO, Default: null)
+  product_id: varchar(20) (Null: NO, Default: null)
+  unit_price: decimal(18,2) (Null: NO, Default: 0.00)
+  quantity: varchar(20) (Null: NO, Default: null)
+  discount: decimal(18,2) (Null: NO, Default: 0.00)
+  sub_total: decimal(18,2) (Null: NO, Default: 0.00)
+  Sample data: {"id":1,"purchase_bill_id":1,"product_id":"1","unit_price":"50.00","quantity":"199","discount":"0.00","sub_total":"9950.00"}
+
+purchase_payment_history columns:
+  id: int(11) (Null: NO, Default: null)
+  purchase_bill_id: varchar(11) (Null: NO, Default: null)
+  payment_by: int(11) (Null: YES, Default: null)
+  amount: decimal(18,2) (Null: NO, Default: 0.00)
+  pay_via: varchar(25) (Null: NO, Default: null)
+  remarks: text (Null: NO, Default: null)
+  attach_orig_name: varchar(255) (Null: YES, Default: null)
+  attach_file_name: varchar(255) (Null: YES, Default: null)
+  paid_on: date (Null: YES, Default: null)
+  coll_type: tinyint(4) (Null: NO, Default: 0)
+
+student_category columns:
+  id: int(11) (Null: NO, Default: null)
+  branch_id: int(11) (Null: NO, Default: 0)
+  name: varchar(255) (Null: NO, Default: null)
+  Sample data: {"id":3,"branch_id":1,"name":"General (UR)"}

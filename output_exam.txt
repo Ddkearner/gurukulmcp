@@ -1,0 +1,110 @@
+EXAMS:
+[
+  {
+    "id": 1,
+    "name": "Unit Test (UT)",
+    "term_id": 12,
+    "type_id": 1,
+    "session_id": 4,
+    "branch_id": 1,
+    "remark": "",
+    "mark_distribution": "[\"12\",\"17\"]",
+    "created_at": "2025-12-30T02:35:51.000Z",
+    "updated_at": null
+  },
+  {
+    "id": 2,
+    "name": "Class Test (CT)",
+    "term_id": 12,
+    "type_id": 1,
+    "session_id": 4,
+    "branch_id": 1,
+    "remark": "",
+    "mark_distribution": "[\"16\"]",
+    "created_at": "2025-12-30T02:36:18.000Z",
+    "updated_at": null
+  },
+  {
+    "id": 3,
+    "name": "Weekly Test",
+    "term_id": 12,
+    "type_id": 3,
+    "session_id": 4,
+    "branch_id": 1,
+    "remark": "",
+    "mark_distribution": "[\"15\"]",
+    "created_at": "2025-12-30T02:36:54.000Z",
+    "updated_at": null
+  },
+  {
+    "id": 4,
+    "name": "Monthly Test",
+    "term_id": 12,
+    "type_id": 3,
+    "session_id": 4,
+    "branch_id": 1,
+    "remark": "",
+    "mark_distribution": "[\"12\"]",
+    "created_at": "2025-12-30T02:37:36.000Z",
+    "updated_at": null
+  },
+  {
+    "id": 5,
+    "name": "Mid-Term Examination",
+    "term_id": 12,
+    "type_id": 3,
+    "session_id": 4,
+    "branch_id": 1,
+    "remark": "",
+    "mark_distribution": "[\"12\",\"13\"]",
+    "created_at": "2025-12-30T02:38:09.000Z",
+    "updated_at": null
+  }
+]
+
+TERMS:
+[
+  {
+    "id": 2,
+    "name": "Term",
+    "branch_id": 1,
+    "session_id": 4
+  },
+  {
+    "id": 4,
+    "name": "Assessment",
+    "branch_id": 1,
+    "session_id": 4
+  },
+  {
+    "id": 8,
+    "name": "Unit Test",
+    "branch_id": 1,
+    "session_id": 4
+  },
+  {
+    "id": 9,
+    "name": "Oral / Viva",
+    "branch_id": 1,
+    "session_id": 4
+  },
+  {
+    "id": 10,
+    "name": "Practical Exam",
+    "branch_id": 1,
+    "session_id": 4
+  },
+  {
+    "id": 11,
+    "name": "Re-Exam / Supplementary Exam",
+    "branch_id": 1,
+    "session_id": 4
+  },
+  {
+    "id": 12,
+    "name": "Regular School Exams",
+    "branch_id": 1,
+    "session_id": 4
+  }
+]
+

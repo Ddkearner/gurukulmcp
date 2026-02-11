@@ -1,0 +1,56 @@
+# School-Wide Pending Fees Report
+**Session**: 2024-25 (Session 4)
+
+| Reg No | Student Name | Class | Allocated | Paid | Balance |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 136 | Aditi Dubey | 1st (A) | 777.00 | 0.00 | **777** |
+| 133 | Aditya Trivedi | 1st (A) | 777.00 | 0.00 | **777** |
+| 109 | Advik Singh | 1st (A) | 777.00 | 77.00 | **700** |
+| 153 | Ansh Jadhav | 1st (A) | 777.00 | 0.00 | **777** |
+| 149 | Arnav Nanda | 1st (A) | 777.00 | 0.00 | **777** |
+| 157 | Dhruv Gokhale | 1st (A) | 777.00 | 0.00 | **777** |
+| 119 | Divya Gupta | 1st (A) | 777.00 | 0.00 | **777** |
+| 115 | Harini Verma | 1st (A) | 777.00 | 0.00 | **777** |
+| 131 | Harsh Goswami | 1st (A) | 777.00 | 0.00 | **777** |
+| 155 | Hriday Gore | 1st (A) | 777.00 | 0.00 | **777** |
+| 140 | Ira Gowda | 1st (A) | 777.00 | 0.00 | **777** |
+| 122 | Ishan Khurana | 1st (A) | 777.00 | 0.00 | **777** |
+| 145 | Ishita Kaur | 1st (A) | 777.00 | 0.00 | **777** |
+| 142 | Jiya Raj | 1st (A) | 777.00 | 0.00 | **777** |
+| 116 | Kabir Reddy | 1st (A) | 777.00 | 0.00 | **777** |
+| 105 | Kabir Reddy | 1st (A) | 777.00 | 7.00 | **770** |
+| 156 | Keya Pawar | 1st (A) | 777.00 | 0.00 | **777** |
+| 110 | Kiara Pillai | 1st (A) | 777.00 | 0.00 | **777** |
+| 113 | Krishna Patel | 1st (A) | 777.00 | 0.00 | **777** |
+| 128 | Kritika Thakur | 1st (A) | 777.00 | 0.00 | **777** |
+| 129 | Laksh Rawat | 1st (A) | 777.00 | 0.00 | **777** |
+| 158 | Mahika Banerjee | 1st (A) | 777.00 | 0.00 | **777** |
+| 154 | Manya Deshmukh | 1st (A) | 777.00 | 0.00 | **777** |
+| 127 | Mihir Saxena | 1st (A) | 777.00 | 0.00 | **777** |
+| 144 | Myra Mishra | 1st (A) | 777.00 | 0.00 | **777** |
+| 130 | Nandini Bhatt | 1st (A) | 777.00 | 0.00 | **777** |
+| 121 | Neha Chopra | 1st (A) | 777.00 | 0.00 | **777** |
+| 134 | Palak Rajput | 1st (A) | 777.00 | 0.00 | **777** |
+| 141 | Param Pandey | 1st (A) | 777.00 | 0.00 | **777** |
+| 146 | Parth Gill | 1st (A) | 777.00 | 0.00 | **777** |
+| 117 | Prerna Nair | 1st (A) | 777.00 | 0.00 | **777** |
+| 120 | Raghav Shah | 1st (A) | 777.00 | 0.00 | **777** |
+| 151 | Reyansh Joshi | 1st (A) | 777.00 | 0.00 | **777** |
+| 143 | Rohan Das | 1st (A) | 777.00 | 0.00 | **777** |
+| 137 | Rudra Awasthi | 1st (A) | 777.00 | 0.00 | **777** |
+| 160 | Saanvi Dutta | 1st (A) | 777.00 | 0.00 | **777** |
+| 147 | Samar Sandhu | 1st (A) | 777.00 | 0.00 | **777** |
+| 118 | Samarth Pillai | 1st (A) | 777.00 | 0.00 | **777** |
+| 148 | Sanvi Sidhu | 1st (A) | 777.00 | 0.00 | **777** |
+| 106 | Sara Khanna | 1st (A) | 777.00 | 0.00 | **777** |
+| 159 | Shlok Mukherjee | 1st (A) | 777.00 | 0.00 | **777** |
+| 126 | Simran Bansal | 1st (A) | 777.00 | 0.00 | **777** |
+| 132 | Sneha Srivastava | 1st (A) | 777.00 | 0.00 | **777** |
+| 114 | Tanish Yadav | 1st (A) | 777.00 | 0.00 | **777** |
+| 123 | Tanvi Mehta | 1st (A) | 777.00 | 0.00 | **777** |
+| 152 | Tara Kulkarni | 1st (A) | 777.00 | 0.00 | **777** |
+| 138 | Vaishnavi Mahajan | 1st (A) | 777.00 | 0.00 | **777** |
+| 125 | Veer Chauhan | 1st (A) | 777.00 | 0.00 | **777** |
+| 139 | Vivaan Shetty | 1st (A) | 777.00 | 0.00 | **777** |
+| 135 | Yuvraj Pathak | 1st (A) | 777.00 | 0.00 | **777** |
+| 150 | Zoya Purohit | 1st (A) | 777.00 | 0.00 | **777** |

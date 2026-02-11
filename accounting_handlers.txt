@@ -1,0 +1,155 @@
+
+// --- Accounting/Finance Implementation ---
+case "list_voucher_heads": {
+    const parsed = z.object({
+        type: z.string().optional(),
+        branch_id: z.number().optional()
+    }).parse(args);
+
+    let query = "SELECT * FROM voucher_head WHERE 1=1";
+    const params: any[] = [];
+
+    if (parsed.type) {
+        query += " AND type = ?";
+        params.push(parsed.type);
+    }
+    if (parsed.branch_id) {
+        query += " AND branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}
+
+case "create_voucher_head": {
+    const parsed = z.object({
+        name: z.string(),
+        type: z.string(),
+        branch_id: z.number()
+    }).parse(args);
+
+    const [result] = await pool.execute(
+        "INSERT INTO voucher_head (name, type, branch_id, system) VALUES (?, ?, ?, 0)",
+        [parsed.name, parsed.type, parsed.branch_id]
+    );
+
+    return { content: [{ type: "text", text: `Voucher head created. ID: ${(result as any).insertId}` }] };
+}
+
+case "add_income": {
+    const parsed = z.object({
+        voucher_head_id: z.number(),
+        amount: z.number(),
+        date: z.string(),
+        description: z.string().optional(),
+        payment_method: z.string().optional(),
+        ref: z.string().optional(),
+        account_id: z.string().optional()
+    }).parse(args);
+
+    const [result] = await pool.execute(
+        `INSERT INTO transactions (voucher_head_id, type, category, amount, cr, date, description, pay_via, ref, account_id, branch_id, system, dr, bal) 
+         VALUES (?, 'income', 'income', ?, ?, ?, ?, ?, ?, ?, 1, 0, 0, 0)`,
+        [
+            parsed.voucher_head_id,
+            parsed.amount,
+            parsed.amount,
+            parsed.date,
+            parsed.description || '',
+            parsed.payment_method || 'cash',
+            parsed.ref || '',
+            parsed.account_id || ''
+        ]
+    );
+
+    return { content: [{ type: "text", text: `Income recorded successfully. Transaction ID: ${(result as any).insertId}` }] };
+}
+
+case "add_expense": {
+    const parsed = z.object({
+        voucher_head_id: z.number(),
+        amount: z.number(),
+        date: z.string(),
+        description: z.string().optional(),
+        payment_method: z.string().optional(),
+        ref: z.string().optional(),
+        account_id: z.string().optional()
+    }).parse(args);
+
+    const [result] = await pool.execute(
+        `INSERT INTO transactions (voucher_head_id, type, category, amount, dr, date, description, pay_via, ref, account_id, branch_id, system, cr, bal) 
+         VALUES (?, 'expense', 'expense', ?, ?, ?, ?, ?, ?, ?, 1, 0, 0, 0)`,
+        [
+            parsed.voucher_head_id,
+            parsed.amount,
+            parsed.amount,
+            parsed.date,
+            parsed.description || '',
+            parsed.payment_method || 'cash',
+            parsed.ref || '',
+            parsed.account_id || ''
+        ]
+    );
+
+    return { content: [{ type: "text", text: `Expense recorded successfully. Transaction ID: ${(result as any).insertId}` }] };
+}
+
+case "list_transactions": {
+    const parsed = z.object({
+        type: z.string().optional(),
+        start_date: z.string().optional(),
+        end_date: z.string().optional(),
+        limit: z.number().optional()
+    }).parse(args);
+
+    let query = `SELECT t.*, v.name as voucher_name 
+                FROM transactions t 
+                LEFT JOIN voucher_head v ON t.voucher_head_id = v.id 
+                WHERE 1=1`;
+    const params: any[] = [];
+
+    if (parsed.type) {
+        query += " AND t.type = ?";
+        params.push(parsed.type);
+    }
+    if (parsed.start_date) {
+        query += " AND t.date >= ?";
+        params.push(parsed.start_date);
+    }
+    if (parsed.end_date) {
+        query += " AND t.date <= ?";
+        params.push(parsed.end_date);
+    }
+
+    query += " ORDER BY t.date DESC, t.id DESC";
+
+    if (parsed.limit) {
+        query += " LIMIT ?";
+        params.push(parsed.limit);
+    } else {
+        query += " LIMIT 50";
+    }
+
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}
+
+case "list_accounts": {
+    const parsed = z.object({
+        branch_id: z.number().optional()
+    }).parse(args);
+
+    let query = "SELECT * FROM accounts WHERE 1=1";
+    const params: any[] = [];
+
+    if (parsed.branch_id) {
+        query += " AND branch_id = ?";
+        params.push(parsed.branch_id);
+    }
+
+    query += " ORDER BY name";
+
+    const [rows] = await pool.execute(query, params);
+    return { content: [{ type: "text", text: JSON.stringify(rows, null, 2) }] };
+}

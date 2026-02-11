@@ -1,0 +1,64 @@
+Accounting-related tables:
+accounts, staff_bank_account, transactions, transactions_links, transactions_links_details, voucher_head
+
+
+accounts columns:
+  id: int(11)
+  name: varchar(255)
+  number: varchar(255)
+  description: text
+  balance: double(18,2)
+  branch_id: int(11)
+  created_at: timestamp
+  updated_at: datetime
+
+staff_bank_account columns:
+  id: int(11)
+  staff_id: int(11)
+  bank_name: varchar(200)
+  holder_name: varchar(255)
+  bank_branch: varchar(255)
+  bank_address: varchar(255)
+  ifsc_code: varchar(200)
+  account_no: varchar(200)
+  created_at: timestamp
+  updated_at: datetime
+
+transactions columns:
+  id: int(11)
+  account_id: varchar(20)
+  voucher_head_id: int(11)
+  type: varchar(100)
+  category: varchar(20)
+  ref: varchar(255)
+  amount: decimal(18,2)
+  dr: decimal(18,2)
+  cr: decimal(18,2)
+  bal: decimal(18,2)
+  date: date
+  pay_via: varchar(20)
+  description: text
+  attachments: varchar(255)
+  branch_id: int(11)
+  system: tinyint(1)
+  created_at: timestamp
+  updated_at: datetime
+
+transactions_links columns:
+  id: int(11)
+  status: tinyint(3)
+  deposit: tinyint(3)
+  expense: tinyint(3)
+  branch_id: int(11)
+
+transactions_links_details columns:
+  id: int(11)
+  payment_id: int(11)
+  transactions_id: int(11)
+
+voucher_head columns:
+  id: int(11)
+  name: varchar(255)
+  type: varchar(20)
+  system: tinyint(1)
+  branch_id: int(11)
