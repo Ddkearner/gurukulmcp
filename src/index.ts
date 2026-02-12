@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse";
 import {
     CallToolRequestSchema,
     ErrorCode,
@@ -8,7 +8,7 @@ import {
     ListToolsRequestSchema,
     McpError,
     ReadResourceRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+} from "@modelcontextprotocol/sdk/types";
 import axios from "axios";
 import express from "express";
 import cors from "cors";
@@ -4851,6 +4851,10 @@ app.use(cors());
 app.use(express.json());
 
 let transport: SSEServerTransport | null = null;
+
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
 
 app.get('/sse', async (req, res) => {
     console.log("Received connection for /sse");
