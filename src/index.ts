@@ -17,17 +17,25 @@ import { z } from "zod";
 import dotenv from "dotenv";
 dotenv.config();
 
+import { AsyncLocalStorage } from "node:async_hooks";
+
+// Storage for request-scoped API key
+const storage = new AsyncLocalStorage<string>();
+
 // SQL Proxy Class to replace mysql2 pool
 class SqlProxy {
     private apiUrl: string;
-    private apiKey: string;
+    private defaultApiKey: string;
 
     constructor() {
         this.apiUrl = process.env.RAMOM_API_URL || "http://localhost/ramom/mcp/sql_execute";
-        this.apiKey = process.env.RAMOM_API_KEY || "";
+        this.defaultApiKey = process.env.RAMOM_API_KEY || "";
     }
 
     async execute(sql: string, params: any[] = []): Promise<[any, any]> {
+        // Prefer request-scoped key, fall back to env var
+        const apiKey = storage.getStore() || this.defaultApiKey;
+
         try {
             const response = await axios.post(
                 this.apiUrl,
@@ -35,7 +43,7 @@ class SqlProxy {
                 {
                     headers: {
                         "Content-Type": "application/json",
-                        "X-API-KEY": this.apiKey,
+                        "X-API-KEY": apiKey,
                     },
                 }
             );
@@ -4846,14 +4854,25 @@ let transport: SSEServerTransport | null = null;
 
 app.get('/sse', async (req, res) => {
     console.log("Received connection for /sse");
-    transport = new SSEServerTransport("/messages", res);
+    const apiKey = req.query.api_key as string;
+
+    // Pass API key to transport via query param in the endpoint URL for client logic if needed,
+    // but crucially, we need it for the initial connection if we were validating here.
+    // For MCP, the tools ran via /messages, so storage context there is more important.
+
+    transport = new SSEServerTransport(`/messages?api_key=${apiKey || ''}`, res);
     await server.connect(transport);
 });
 
 app.post('/messages', async (req, res) => {
     console.log("Received message on /messages");
+    const apiKey = req.query.api_key as string;
+
     if (transport) {
-        await transport.handlePostMessage(req, res);
+        // Run handlePostMessage within the AsyncLocalStorage context with the apiKey
+        await storage.run(apiKey, async () => {
+            await transport!.handlePostMessage(req, res);
+        });
     } else {
         res.status(400).json({ error: "No active transport" });
     }
@@ -4861,21 +4880,90 @@ app.post('/messages', async (req, res) => {
 
 app.get('/', (req, res) => {
     const host = req.get('host');
-    const protocol = req.protocol; // vs https if proxied
-    // Vercel usually forwards protocol, but req.protocol might be http internally.
-    // Better to just assume https on Vercel or use checking.
+    const protocol = req.protocol;
     const baseUrl = `https://${host}`;
 
-    res.json({
-        status: "online",
-        mcpServers: {
-            "gurukul-ai": {
-                endpoint: `${baseUrl}/sse`,
-                type: "sse"
-            }
-        },
-        description: "Gurukul AI MCP Server"
-    });
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gurukul AI MCP Server</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #2c3e50; }
+        .status { display: inline-block; padding: 5px 10px; border-radius: 4px; background: #e8f5e9; color: #2e7d32; font-weight: bold; font-size: 0.9em; margin-bottom: 20px; }
+        .config-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 15px; position: relative; }
+        pre { margin: 0; white-space: pre-wrap; word-wrap: break-word; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.9em; color: #24292e; }
+        button { background: #0366d6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
+        button:hover { background: #0255b3; }
+        input[type="text"] { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; }
+        .note { font-size: 0.85em; color: #666; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Gurukul AI MCP Server</h1>
+    <div class="status">● System Online</div>
+    
+    <p>This server provides Model Context Protocol (MCP) access to the Gurukul RAMOM system.</p>
+
+    <div style="margin-bottom: 25px;">
+        <label for="apiKey" style="font-weight: bold; display: block; margin-bottom: 5px;">Enter your Ramom API Key:</label>
+        <input type="text" id="apiKey" placeholder="rmm_xxxxxxxxxxxxxxxx" oninput="updateConfig()">
+        <div class="note">Your API Key is used to securely connect to the RAMOM database. It is not stored on this server.</div>
+    </div>
+
+    <h3>Client Configuration</h3>
+    <p>Copy this JSON into your MCP client configuration (e.g., <code>claude_desktop_config.json</code>):</p>
+    
+    <div class="config-box">
+        <button class="copy-btn" onclick="copyConfig()">Copy</button>
+        <pre id="configBlock">{
+  "mcpServers": {
+    "gurukul-ai": {
+      "endpoint": "${baseUrl}/sse",
+      "type": "sse"
+    }
+  }
+}</pre>
+    </div>
+
+    <script>
+        const baseUrl = "${baseUrl}";
+        
+        function updateConfig() {
+            const key = document.getElementById('apiKey').value.trim();
+            const endpoint = key ? \`\${baseUrl}/sse?api_key=\${key}\` : \`\${baseUrl}/sse\`;
+            
+            const config = {
+                "mcpServers": {
+                    "gurukul-ai": {
+                        "endpoint": endpoint,
+                        "type": "sse"
+                    }
+                }
+            };
+            
+            document.getElementById('configBlock').textContent = JSON.stringify(config, null, 2);
+        }
+
+        function copyConfig() {
+            const text = document.getElementById('configBlock').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
+    `;
+
+    res.send(html);
 });
 
 const PORT = process.env.PORT || 3000;
