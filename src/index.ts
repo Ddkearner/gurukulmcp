@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
     CallToolRequestSchema,
     ErrorCode,
@@ -10,6 +10,8 @@ import {
     ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import axios from "axios";
+import express from "express";
+import cors from "cors";
 import { z } from "zod";
 
 import dotenv from "dotenv";
@@ -4836,12 +4838,51 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 });
 
-const transport = new StdioServerTransport();
-async function main() {
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+let transport: SSEServerTransport | null = null;
+
+app.get('/sse', async (req, res) => {
+    console.log("Received connection for /sse");
+    transport = new SSEServerTransport("/messages", res);
     await server.connect(transport);
+});
+
+app.post('/messages', async (req, res) => {
+    console.log("Received message on /messages");
+    if (transport) {
+        await transport.handlePostMessage(req, res);
+    } else {
+        res.status(400).json({ error: "No active transport" });
+    }
+});
+
+app.get('/', (req, res) => {
+    const host = req.get('host');
+    const protocol = req.protocol; // vs https if proxied
+    // Vercel usually forwards protocol, but req.protocol might be http internally.
+    // Better to just assume https on Vercel or use checking.
+    const baseUrl = `https://${host}`;
+
+    res.json({
+        status: "online",
+        mcpServers: {
+            "gurukul-ai": {
+                endpoint: `${baseUrl}/sse`,
+                type: "sse"
+            }
+        },
+        description: "Gurukul AI MCP Server"
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
 }
 
-main().catch((error) => {
-    console.error("Server error:", error);
-    process.exit(1);
-});
+export default app;
